@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using OVR;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UIElements;
@@ -24,6 +25,8 @@ public class SistemaDeInteraçãoDoDHT : MonoBehaviour
     [SerializeField] private bool debuging = true;
 
     [HideInInspector] public bool ativarCatastrofe = false;
+
+    [Range(1, 100)] public int HumTreshold = 80; 
     
     private async void Start()
     {
@@ -47,7 +50,7 @@ public class SistemaDeInteraçãoDoDHT : MonoBehaviour
             graficoDeTemperatura.atualizarValor(statusDht.Temp);
             graficoDeHumidade.atualizarValor(statusDht.Hum);
 
-            if (ativarCatastrofe || (ConectorDaAPI.conector.isUp && statusDht.Hum > 80f))
+            if (ativarCatastrofe || (ConectorDaAPI.conector.isUp && statusDht.Hum > HumTreshold))
             {
                 graficoDeTemperatura.atualizarValor(95);
                 graficoDeHumidade.atualizarValor(5);

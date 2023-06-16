@@ -26,11 +26,7 @@ public class ConfigurarAPI : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        Debug.Log(Application.persistentDataPath);
-        
         CarregarInformacoes();
-
-        atualizarTexto();
     }
 
     public async void testarAPI()
@@ -114,7 +110,7 @@ public class ConfigurarAPI : MonoBehaviour
         }
     }
 
-    void CarregarInformacoes()
+    public void CarregarInformacoes()
     {
         string path = Application.persistentDataPath + pathArquivoConfiguracao;
         if (File.Exists(path))
@@ -137,6 +133,8 @@ public class ConfigurarAPI : MonoBehaviour
 
         conectorDaAPI.IP = IP;
         conectorDaAPI.PORT = PORT;
+
+        atualizarTexto();
     }
 
     public void SalvarInformacoes()
@@ -147,7 +145,7 @@ public class ConfigurarAPI : MonoBehaviour
 }
 
 [System.Serializable]
-public class ConfiguracoesAPI
+public partial class ConfiguracoesAPI
 {
     public string IP;
     public string PORT;
