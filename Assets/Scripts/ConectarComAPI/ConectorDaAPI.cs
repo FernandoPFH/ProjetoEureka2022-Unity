@@ -8,8 +8,8 @@ using Random = UnityEngine.Random;
 
 public class ConectorDaAPI : MonoBehaviour
 {
-    [SerializeField] private string IP;
-    [SerializeField] private string PORT;
+    [SerializeField] public string IP;
+    [SerializeField] public string PORT;
     [SerializeField] private int TOTAL_TENTATIVAS;
 
     [SerializeField] private SistemaDeInteraçãoDeGrafico graficoDeTemperatura;
@@ -72,6 +72,12 @@ public class ConectorDaAPI : MonoBehaviour
         
         Debug.Log("Teste Status DHT");
         Debug.Log($"Status: {JsonUtility.ToJson(await conector.PegarInfosDht())}");
+    }
+
+    public void SetarConfiguracoes(string IP, string PORT)
+    {
+        this.IP = IP;
+        this.PORT = PORT;
     }
 }
 
