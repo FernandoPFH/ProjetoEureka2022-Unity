@@ -23,6 +23,8 @@ public class SistemaDeInteraçãoDoDHT : MonoBehaviour
 
     [SerializeField] private bool debuging = true;
 
+    [HideInInspector] public bool ativarCatastrofe = false;
+    
     private async void Start()
     {
         updateDosDisplay();
@@ -45,7 +47,7 @@ public class SistemaDeInteraçãoDoDHT : MonoBehaviour
             graficoDeTemperatura.atualizarValor(statusDht.Temp);
             graficoDeHumidade.atualizarValor(statusDht.Hum);
 
-            if (statusDht.Hum > 80f)
+            if (ativarCatastrofe || (ConectorDaAPI.conector.isUp && statusDht.Hum > 80f))
             {
                 graficoDeTemperatura.atualizarValor(95);
                 graficoDeHumidade.atualizarValor(5);

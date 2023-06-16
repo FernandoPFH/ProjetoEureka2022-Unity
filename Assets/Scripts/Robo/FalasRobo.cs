@@ -1,5 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Data;
+using System.Threading.Tasks;
 using UnityEngine;
 
 public class FalasRobo : MonoBehaviour
@@ -19,6 +21,8 @@ public class FalasRobo : MonoBehaviour
     [SerializeField] private List<GameObject> controles;
 
     [SerializeField] private Animator _animator;
+
+    [SerializeField] private SistemaDeInteraçãoDoDHT sistemaDeInteraçãoDoDHT;
 
     public void darPlayNoAudio(string nomeDoAudio)
     {
@@ -88,6 +92,16 @@ public class FalasRobo : MonoBehaviour
         {
             controle.SetActive(true);
         }
+    }
+
+    public async void ativarCatastrofeSeNecessario()
+    {
+        if (!ConectorDaAPI.conector.isUp)
+            return;
+
+        await Task.Delay(7000);
+        
+        sistemaDeInteraçãoDoDHT.ativarCatastrofe = true;
     }
 
     public void darPlayExplosao()

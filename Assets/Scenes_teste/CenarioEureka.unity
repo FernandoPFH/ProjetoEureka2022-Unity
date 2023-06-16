@@ -11845,7 +11845,8 @@ MonoBehaviour:
   - {fileID: 0}
   _efeitosDoSkybox: {fileID: 394532359}
   _animator: {fileID: 1345981416}
-  debuging: 1
+  debuging: 0
+  ativarCatastrofe: 0
 --- !u!114 &1152647974
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -13398,6 +13399,7 @@ MonoBehaviour:
   - {fileID: 937095302}
   - {fileID: 469515920}
   _animator: {fileID: 1929496431}
+  "sistemaDeIntera\xE7\xE3oDoDHT": {fileID: 1152647972}
 --- !u!95 &1345981416
 Animator:
   serializedVersion: 4
@@ -18693,6 +18695,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   IP: 192.168.112.127
   PORT: 9152
+  TOTAL_TENTATIVAS: 2
   graficoDeTemperatura: {fileID: 1063547416}
   graficoDeHumidade: {fileID: 524558016}
 --- !u!4 &1879168806

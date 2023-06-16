@@ -1,35 +1,57 @@
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
 using System;
-using System.IO;
 using System.Net;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
+using UnityEngine;
+using Random = UnityEngine.Random;
 
 public class ConectorDaAPI : MonoBehaviour
 {
     [SerializeField] private string IP;
     [SerializeField] private string PORT;
+    [SerializeField] private int TOTAL_TENTATIVAS;
 
     [SerializeField] private SistemaDeInteraçãoDeGrafico graficoDeTemperatura;
     [SerializeField] private SistemaDeInteraçãoDeGrafico graficoDeHumidade;
     
     public static ConectarComAPI conector;
 
-    private void Awake()
+    async void Awake()
     {
-        conector = new ConectarComAPI(IP,PORT);
+        ConectarComAPI testarConexao = new ConectarComAPI(IP,PORT);
+        
+        int iteracao = 0;
+        
+        while (iteracao < TOTAL_TENTATIVAS)
+        {
+            if (await testarConexao.TestarConexao())
+                break;
+            
+            Debug.Log($"Tentiva {++iteracao} Falhou!");
+        }
+        
+
+        if (iteracao >= TOTAL_TENTATIVAS)
+        {
+            Debug.Log("Iniciando ConectarComAPISimulador");
+            conector = new ConectarComAPISimulador(IP,PORT);
+        }
+        else
+        {
+            Debug.Log("Iniciando ConectarComAPI");
+            conector = new ConectarComAPI(IP,PORT);
+        }
     }
     
     async void Start()
     {
         // FuncaoParaTestarAAPI();
-        await ConectorDaAPI.conector.SetarStatusLed(true, 0,0, 0);
+
         
-        StatusDHT statusDht = await ConectorDaAPI.conector.PegarInfosDht();
-        
+        await conector.SetarStatusLed(true, 0,0, 0);
+        StatusDHT statusDht = await conector.PegarInfosDht();
+
         graficoDeTemperatura.atualizarValor(statusDht.Temp);
         graficoDeHumidade.atualizarValor(statusDht.Hum);
     }
@@ -55,6 +77,8 @@ public class ConectorDaAPI : MonoBehaviour
 
 public class ConectarComAPI
 {
+    public readonly bool isUp = true;
+    
     private String PROTOCOLO = "http";
     private String IP;
     private String PORT;
@@ -63,25 +87,50 @@ public class ConectarComAPI
 
     public ConectarComAPI(String ip, String port)
     {
-        this.IP = ip;
-        this.PORT = port;
+        IP = ip;
+        PORT = port;
         
-        this.httpClient = new HttpClient();
+        httpClient = new HttpClient();
+    }
+
+    public  async Task<bool> TestarConexao()
+    {
+        Debug.Log("Comecando Teste");
+        
+        try
+        {
+            // Cria uma solicitação HTTP para a URL da API
+            var request = (HttpWebRequest)WebRequest.Create($"{PROTOCOLO}://{IP}:{PORT}/led");
+            request.Timeout = 5000; // Define um tempo limite de 5 segundos para a resposta da API
+
+            // Envia a solicitação e obtém a resposta
+            using (var response = (HttpWebResponse)request.GetResponse())
+            {
+                Debug.Log(response.StatusCode);
+                // Verifica se o código de status da resposta é 200 (OK)
+                return response.StatusCode == HttpStatusCode.OK;
+            }
+        }
+        catch (Exception)
+        {
+            // Se ocorrer qualquer exceção durante a verificação, assume que a API está offline
+            return false;
+        }
     }
 
     private async Task<Status> RequesteGetDaAPI(string caminho)
     {
-        return JsonUtility.FromJson<Status>(await this.httpClient.GetStringAsync($"{PROTOCOLO}://{IP}:{PORT}/{caminho}"));
+        return JsonUtility.FromJson<Status>(await httpClient.GetStringAsync($"{PROTOCOLO}://{IP}:{PORT}/{caminho}"));
     }
 
     private async Task<bool> RequestePostDaAPI(string caminho,Status dadosParaEnviar)
     {
         var conteudo = new StringContent(JsonUtility.ToJson(dadosParaEnviar), Encoding.UTF8, "application/json");
         
-        return (await this.httpClient.PostAsync($"{PROTOCOLO}://{IP}:{PORT}/{caminho}",conteudo)).IsSuccessStatusCode;
+        return (await httpClient.PostAsync($"{PROTOCOLO}://{IP}:{PORT}/{caminho}",conteudo)).IsSuccessStatusCode;
     }
 
-    public async Task<bool> PegarStatusLampada()
+    public virtual async Task<bool> PegarStatusLampada()
     {
         Status statusLampada = await RequesteGetDaAPI("lamp");
 
@@ -90,7 +139,7 @@ public class ConectarComAPI
         // Retorna Bool Do Status Da Lampada
     }
 
-    public async Task<bool> SetarStatusLampada(bool status)
+    public virtual async Task<bool> SetarStatusLampada(bool status)
     {
         Status statusLampada = new Status();
         statusLampada.status = status;
@@ -100,7 +149,7 @@ public class ConectarComAPI
         // Retorna Bool Se Deu Certo
     }
 
-    public async Task<StatusLed> PegarInfosLed()
+    public virtual async Task<StatusLed> PegarInfosLed()
     {
         Status statusRequeste = await RequesteGetDaAPI("led");
 
@@ -116,7 +165,7 @@ public class ConectarComAPI
         //  }
     }
 
-    public async Task<bool> SetarStatusLed(bool status,int R,int G,int B)
+    public virtual async Task<bool> SetarStatusLed(bool status,int R,int G,int B)
     {
         Status statusLed = new Status();
         statusLed.status = status;
@@ -129,7 +178,7 @@ public class ConectarComAPI
         // Retorna Bool Se Deu Certo
     }
 
-    public async Task<StatusDHT> PegarInfosDht()
+    public virtual async Task<StatusDHT> PegarInfosDht()
     {
         Status statusRequeste = await RequesteGetDaAPI("DHT");
 
@@ -144,12 +193,91 @@ public class ConectarComAPI
     }
 }
 
+// Simulador De Conexão Com API Quando Não Puder Acessar API
+public class ConectarComAPISimulador : ConectarComAPI
+{
+    public readonly bool isUp = false;
+    
+    private StatusLed statusLed = new(true,0,0,0);
+    private StatusDHT statusDht = new(30,40);
+
+    public ConectarComAPISimulador(String ip, String port) : base(ip, port)
+    {
+    }
+
+    public override async Task<bool> PegarStatusLampada()
+    {
+        return true;
+        
+        // Retorna Bool Do Status Da Lampada
+    }
+
+    public override async Task<bool> SetarStatusLampada(bool status)
+    {
+        Status statusLampada = new Status();
+        statusLampada.status = status;
+
+        return true;
+        
+        // Retorna Bool Se Deu Certo
+    }
+
+    public override async Task<StatusLed> PegarInfosLed()
+    {
+        return new StatusLed(statusLed.status,statusLed.R,statusLed.G,statusLed.B);
+        
+        // Retorna StatusLed
+        //
+        //  {
+        //      bool status;
+        //      int R;
+        //      int G;
+        //      int B;
+        //  }
+    }
+
+    public override async Task<bool> SetarStatusLed(bool status,int R,int G,int B)
+    {
+        statusLed.status = status;
+        statusLed.R = R;
+        statusLed.G = G;
+        statusLed.B = B;
+
+        return true;
+        
+        // Retorna Bool Se Deu Certo
+    }
+
+    public override async Task<StatusDHT> PegarInfosDht()
+    {
+        float valorMudarTemp = Random.Range(-2f, 2f);
+
+        statusDht.Temp += valorMudarTemp;
+        
+        float valorMudarHum = Random.Range(-2f, 2f);
+
+        if (statusDht.Hum + valorMudarHum >= 80f)
+            statusDht.Hum -= valorMudarHum;
+        else
+            statusDht.Hum += valorMudarHum;
+        
+        return statusDht;
+        
+        // Retorna StatusLed
+        //
+        //  {
+        //      float Temp;
+        //      float Hum;
+        //  }
+    }
+}
+
 class Status
 {
     public bool status;
-    public int r = 0;
-    public int g = 0;
-    public int b = 0;
+    public int r;
+    public int g;
+    public int b;
     public float temperature = 0;
     public float humidity = 0;
 }
@@ -157,28 +285,28 @@ class Status
 public class StatusLed
 {
     public bool status;
-    public int R = 0;
-    public int G = 0;
-    public int B = 0;
+    public int R;
+    public int G;
+    public int B;
 
     public StatusLed(bool status,int r,int g,int b)
     {
         this.status = status;
-        this.R = r;
-        this.G = g;
-        this.B = b;
+        R = r;
+        G = g;
+        B = b;
     }
 }
 
 public class StatusDHT
 {
-    public float Temp = 0;
-    public float Hum = 0;
+    public float Temp;
+    public float Hum;
 
     public StatusDHT(float temp,float hum)
     {
-        this.Temp = temp;
-        this.Hum = hum;
+        Temp = temp;
+        Hum = hum;
     }
 }
 
