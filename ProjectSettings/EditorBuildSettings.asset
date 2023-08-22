@@ -6,7 +6,7 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
-    path: Assets/Scenes_teste/CenarioEureka.unity
+    path: Assets/Scenes/CenarioEureka.unity
     guid: e8fc3e2b206f5924ea7dda25cbcc5150
   m_configObjects:
     Unity.XR.Oculus.Settings: {fileID: 11400000, guid: 59b3e6beb2a31f840b911b36ae073818,
