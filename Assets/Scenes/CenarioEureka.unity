@@ -2896,7 +2896,7 @@ RectTransform:
   m_Children:
   - {fileID: 1598018808}
   m_Father: {fileID: 604674552}
-  m_RootOrder: 7
+  m_RootOrder: 8
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 180}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
@@ -2954,7 +2954,7 @@ MonoBehaviour:
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 2
+          m_IntArgument: 3
           m_FloatArgument: 0
           m_StringArgument: 
           m_BoolArgument: 0
@@ -5191,7 +5191,7 @@ RectTransform:
   m_Children:
   - {fileID: 499339971}
   m_Father: {fileID: 604674552}
-  m_RootOrder: 8
+  m_RootOrder: 7
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 180}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
@@ -5249,7 +5249,7 @@ MonoBehaviour:
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 3
+          m_IntArgument: 2
           m_FloatArgument: 0
           m_StringArgument: 
           m_BoolArgument: 0
@@ -8473,8 +8473,8 @@ RectTransform:
   - {fileID: 1046721599}
   - {fileID: 834097496}
   - {fileID: 735117800}
-  - {fileID: 256283737}
   - {fileID: 411532338}
+  - {fileID: 256283737}
   - {fileID: 893170347}
   m_Father: {fileID: 582835091}
   m_RootOrder: 1
