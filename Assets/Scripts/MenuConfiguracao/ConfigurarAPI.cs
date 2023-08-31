@@ -101,7 +101,7 @@ public class ConfigurarAPI : MonoBehaviour
             
             foreach (var ip_part in ip_parts)
             {
-                texto += $"{int.Parse(ip_part):000}.";
+                texto += $"{int.Parse(ip_part)}.";
             }
 
             IP = $"{texto.Remove(texto.Length - 1, 1)}";
