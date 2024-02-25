@@ -26,7 +26,11 @@ public class SistemaDeInteraçãoDoDHT : MonoBehaviour
 
     [HideInInspector] public bool ativarCatastrofe = false;
 
+    [HideInInspector] public bool piscarLed = true;
+
     [Range(1, 100)] public int HumTreshold = 80; 
+
+    [Range(0, 100)] public int DimHum = 0; 
     
     private async void Start()
     {
@@ -48,9 +52,9 @@ public class SistemaDeInteraçãoDoDHT : MonoBehaviour
             StatusDHT statusDht = await ConectorDaAPI.conector.PegarInfosDht();
         
             graficoDeTemperatura.atualizarValor(statusDht.Temp);
-            graficoDeHumidade.atualizarValor(statusDht.Hum);
+            graficoDeHumidade.atualizarValor(Mathf.Max(statusDht.Hum - DimHum,0));
 
-            if (ativarCatastrofe || (ConectorDaAPI.conector.isUp && statusDht.Hum > HumTreshold))
+            if (ativarCatastrofe || (ConectorDaAPI.conector.isUp && (Mathf.Max(statusDht.Hum - DimHum,0)) > HumTreshold))
             {
                 graficoDeTemperatura.atualizarValor(95);
                 graficoDeHumidade.atualizarValor(5);
@@ -97,7 +101,7 @@ public class SistemaDeInteraçãoDoDHT : MonoBehaviour
     {
         bool valorPaineis = true;
 
-        while (Application.isPlaying)
+        while (piscarLed)
         {
             foreach (GameObject painelDePerigo in paineisDePerigo)
                 painelDePerigo.SetActive(valorPaineis);
@@ -113,5 +117,7 @@ public class SistemaDeInteraçãoDoDHT : MonoBehaviour
 
             valorPaineis = !valorPaineis;
         }
+
+        await ConectorDaAPI.conector.SetarStatusLed(false, 0, 0, 0);
     }
 }

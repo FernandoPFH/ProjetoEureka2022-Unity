@@ -28,6 +28,6 @@ public class SistemaDeInteraçãoDaLed : MonoBehaviour
                 componenteDeSliderB.value/255);
         }
         
-        await ConectorDaAPI.conector.SetarStatusLed(true, (int) componenteDeSliderR.value,(int) componenteDeSliderG.value, (int) componenteDeSliderB.value);
+        ConectorDaAPI.conector.SetarStatusLed(true, (int) componenteDeSliderR.value,(int) componenteDeSliderG.value, (int) componenteDeSliderB.value);
     }
 }

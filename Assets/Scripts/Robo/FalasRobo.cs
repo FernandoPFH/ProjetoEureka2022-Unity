@@ -116,4 +116,9 @@ public class FalasRobo : MonoBehaviour
     {
         _animator.SetTrigger("FecharOsOlhos");
     }
+
+    public void pararPiscarLuz()
+    {
+        sistemaDeInteraçãoDoDHT.piscarLed = false;
+    }
 }

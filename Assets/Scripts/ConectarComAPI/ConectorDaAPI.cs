@@ -22,6 +22,8 @@ public class ConectorDaAPI : MonoBehaviour
         ConectarComAPI testarConexao = new ConectarComAPI(IP,PORT);
         
         int iteracao = 0;
+
+        Debug.Log("Comecando Teste");
         
         while (iteracao < TOTAL_TENTATIVAS)
         {
@@ -49,11 +51,16 @@ public class ConectorDaAPI : MonoBehaviour
         // FuncaoParaTestarAAPI();
 
         
-        await conector.SetarStatusLed(true, 0,0, 0);
+        conector.SetarStatusLed(true, 0, 0, 0);
         StatusDHT statusDht = await conector.PegarInfosDht();
 
         graficoDeTemperatura.atualizarValor(statusDht.Temp);
         graficoDeHumidade.atualizarValor(statusDht.Hum);
+    }
+
+    void OnApplicationQuit()
+    {
+        conector.SetarStatusLed(true, 0, 0, 0);
     }
 
     public async void FuncaoParaTestarAAPI()
@@ -101,8 +108,6 @@ public class ConectarComAPI
 
     public  async Task<bool> TestarConexao()
     {
-        Debug.Log("Comecando Teste");
-        
         try
         {
             // Cria uma solicitação HTTP para a URL da API
@@ -186,7 +191,7 @@ public class ConectarComAPI
 
     public virtual async Task<StatusDHT> PegarInfosDht()
     {
-        Status statusRequeste = await RequesteGetDaAPI("DHT");
+        Status statusRequeste = await RequesteGetDaAPI("dht");
 
         return new StatusDHT(statusRequeste.temperature,statusRequeste.humidity);
         
